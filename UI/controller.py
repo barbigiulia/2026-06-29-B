@@ -12,7 +12,7 @@ class Controller:
 
     def handleCreaGrafo(self, e):
         self._model.buildGraph()
-        self._view._txt_result.clean()
+        self._view._txt_result.controls.clear()
         self._view._txt_result.controls.append(ft.Text("Grafo creato correttamente", color="green"))
         self._view._txt_result.controls.append(ft.Text(f"Numero di nodi: {self._model.getNumNodi()}", color="green"))
         self._view._txt_result.controls.append(ft.Text(f"Numero di archi: {self._model.getNumArchi()}", color="green"))
@@ -29,6 +29,7 @@ class Controller:
 
 # ================================================================
     def handleStampaInfo(self,e):
+        self._view._txt_result.controls.clear()
         num, piuGrande = self._model.compConnesse()
         if int(num) == 0:
             self._view._txt_result.controls.append(
@@ -47,6 +48,7 @@ class Controller:
         self._view.update_page()
 # =====================================================================================================
     def handleSelezione(self,e):
+        self._view._txt_result.controls.clear()
         self._view._txt_result.clean()
 
         albumId = self._view._ddAlbum.value
@@ -97,13 +99,12 @@ class Controller:
         selezione.sort(key=lambda a: a.Title)
 
         for a in selezione:
-            generi = set()
-            for t in a.listaBrani:
-                generi.add(t.GenreId)
             self._view._txt_result.controls.append(
-                ft.Text(f"--> {a.Title}  | ID generi: {sorted(generi)}  | Numero di brani: {len(a.listaBrani)}",
-                        color="pink"))
-
+                ft.Text(f"--> {a.Title}  | ID genere: {a.listaBrani[0].GenreId}  | "
+                        f"Numero di brani: {len(a.listaBrani)}",color="pink"))
+        # conviene fare listaBrani[0] perchè ogni album selezionato ha almeno un brano
+        #quindi non solleva mai IndexError
+        # si assume quindi che tutti i brani di un album abbiano lo stesso genere
         self._view._txt_result.controls.append(
             ft.Text(f"Numero totale di album selezionati: {len(selezione)}", color="blue"))
         self._view._txt_result.controls.append(ft.Text(f"Numero complessivo di brani: {totBrani}", color="blue"))

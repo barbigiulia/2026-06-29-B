@@ -1,3 +1,5 @@
+import copy
+
 import networkx as nx
 
 from database.DAO import DAO
@@ -31,9 +33,7 @@ class Model:
                 brani[a] = []
             brani[a].append(Track(t, g))
         for a in nodi:
-            for aID in brani:
-                 if a.AlbumId == aID:
-                     a.listaBrani = brani.get(aID, [])
+            a.listaBrani = brani.get(a.AlbumId, [])
 
         for a in self._grafo.nodes:
             if a.AlbumId not in self.MapAlbum:
@@ -75,7 +75,7 @@ class Model:
         for c in list(nx.connected_components(self._grafo)):
             res.append((c,len(c)))
         res.sort(key=lambda x: x[1], reverse=True)
-
+        # per trovare la comp. più grande potrei usare direttamente --> max(componenti, key=len)
         # res[0] è gia la tupla
         return num, res[0]    # perchè ho usato list(nx.connected_components(self._grafo))
 
@@ -136,7 +136,7 @@ class Model:
             totale = self.getTotBrani(parziale)
             if totale > self._maxBrani:
                 self._maxBrani = totale
-                self._bestPath = list(parziale)
+                self._bestPath = copy.deepcopy(parziale)
             return
 
         # pruning --> se anche prendendo un album da OGNI componente rimasta
